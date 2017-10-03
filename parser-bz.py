@@ -1,5 +1,6 @@
 from lxml import etree
-from copy import deepcopy
+
+wikipediaDataFile = "E:/Downloads/WikiData/wiki.xml"
 
 def fast_iter(context, func):
         for event, elem in context:
@@ -12,20 +13,12 @@ def fast_iter(context, func):
 
 def serialize(elem):
     r = etree.Element('SimplerRecord')
-    t = etree.SubElement(r, 'title')
-    t.text = next(elem.iterchildren(tag='title')).text
-
-    # for c in elem.iterchildren(tag='Copyright'):
-    #     r.append(deepcopy(c))
+    t = etree.SubElement(r, 'text')
+    t.text = next(elem.iterchildren(tag='text')).text
     return r
-
-
-googleDataFile = "E:/Downloads/GoogleData/google.xml"
-wikipediaDataFile = "E:/Downloads/WikiData/wiki.xml"
-
 
 context = etree.iterparse(wikipediaDataFile, events=('end',), tag='page')
 out = open('E:/Downloads/WikiData/workfile.xml', 'wb', 16777216)
 
 fast_iter(context, lambda elem: out.write(etree.tostring(serialize(elem), encoding='utf-8')))
-out.close()
+out.close

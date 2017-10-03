@@ -12,8 +12,8 @@ def fast_iter(context, func):
 
 def serialize(elem):
     r = etree.Element('SimplerRecord')
-    t = etree.SubElement(r, 'title')
-    t.text = next(elem.iterchildren(tag='title')).text
+    t = etree.SubElement(r, 'Title')
+    t.text = next(elem.iterchildren(tag='Title')).text
 
     # for c in elem.iterchildren(tag='Copyright'):
     #     r.append(deepcopy(c))
@@ -24,7 +24,7 @@ googleDataFile = "E:/Downloads/GoogleData/google.xml"
 wikipediaDataFile = "E:/Downloads/WikiData/wiki.xml"
 
 
-context = etree.iterparse(wikipediaDataFile, events=('end',), tag='page')
+context = etree.iterparse(googleDataFile, events=('end',), tag='Record')
 out = open('E:/Downloads/WikiData/workfile.xml', 'wb', 16777216)
 
 fast_iter(context, lambda elem: out.write(etree.tostring(serialize(elem), encoding='utf-8')))
