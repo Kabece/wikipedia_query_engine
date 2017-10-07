@@ -1,5 +1,5 @@
+import time
 from lxml import etree
-from bz2 import BZ2File
 import re
 
 def fast_iter(context, func):
@@ -12,13 +12,17 @@ def fast_iter(context, func):
                     del ancestor.getparent()[0]
         del context
 
-def textNode(elem):
-    t = next(next(elem.iterchildren(tag='{http://www.mediawiki.org/xml/export-0.10/}revision')).iterchildren(tag='{http://www.mediawiki.org/xml/export-0.10/}text')).text
-    t = re.sub("<[^<]+>", "", t)
-    return t
+def safeWrite(output_file, elem):
+    textWithoutXML = next(next(elem.iterchildren(tag='{http://www.mediawiki.org/xml/export-0.10/}revision'))
+                          .iterchildren(tag='{http://www.mediawiki.org/xml/export-0.10/}text')).text
+    if textWithoutXML is not None:
+        textWithoutXML = re.sub("<[^<]+>", "", textWithoutXML)
+        output_file.write(textWithoutXML)
 
 wikipediaDataFile = "E:/Downloads/WikiData/wiki.xml"
 
-with BZ2File(wikipediaDataFile) as wiki, open('E:/Downloads/WikiData/workfile.xml', 'w', encoding='utf-8') as output_file:
+with open("D:/WikiData/workfile.xml", 'w', encoding='utf-8') as output_file:
+    start_time = time.clock()
     context = etree.iterparse(wikipediaDataFile, events=('end',), tag='{http://www.mediawiki.org/xml/export-0.10/}page')
-    fast_iter(context, lambda elem: output_file.write(textNode(elem)))
+    fast_iter(context, lambda elem: safeWrite(output_file, elem))
+    print(time.clock() - start_time, "seconds")
